@@ -24,9 +24,7 @@ def listar_tarefas() -> str:
     """Lista todas as tarefas da API REST 4.1 (JSON array como texto)."""
     resp = httpx.get(f"{API_BASE}/tarefas", timeout=10)
     resp.raise_for_status()
-    payload = json.dumps(resp.json(), ensure_ascii=False)
-    payload = payload.strip("\\")
-    return payload
+    return resp.json()
 
 
 if __name__ == "__main__":

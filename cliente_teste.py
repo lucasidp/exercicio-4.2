@@ -50,7 +50,10 @@ async def main():
                 "criar_resultado": _parse(criar),
                 "listar_resultado": _as_list(_parse(listar)),
             }
-            print(json.dumps(envelope, ensure_ascii=False))
+            payload = json.dumps(envelope, ensure_ascii=False)
+            print(payload)
+            with open("response.json", "w") as fh:
+                fh.write(payload)
 
 
 if __name__ == "__main__":
