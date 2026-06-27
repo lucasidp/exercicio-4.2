@@ -1,5 +1,6 @@
 ﻿import asyncio
 import json
+import sys
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -53,4 +54,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    envelope = asyncio.run(main())
+    sys.stdout.write(json.dumps(envelope, ensure_ascii=False) + "\n")
