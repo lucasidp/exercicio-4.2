@@ -1,6 +1,10 @@
 ﻿import json
+import logging
 import httpx
 from mcp.server.fastmcp import FastMCP
+
+logging.disable(logging.CRITICAL)
+logging.getLogger("httpx").setLevel(logging.CRITICAL)
 
 API_BASE = "http://localhost:8000"
 
@@ -21,7 +25,7 @@ def criar_tarefa(titulo: str, concluida: bool = False) -> dict:
 
 @mcp.tool()
 def listar_tarefas() -> list[dict]:
-    """Lista todas as tarefas da API REST 4.1 (JSON array como texto)."""
+    """Lista todas as tarefas da API REST 4.1."""
     resp = httpx.get(f"{API_BASE}/tarefas", timeout=10)
     resp.raise_for_status()
     return resp.json()

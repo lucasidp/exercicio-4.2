@@ -1,9 +1,12 @@
 ﻿import asyncio
 import json
+import logging
 import sys
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+
+logging.disable(logging.CRITICAL)
 
 
 def _parse(result):
@@ -12,47 +15,37 @@ def _parse(result):
         if isinstance(sc, dict) and list(sc.keys()) == ["result"]:
             return sc["result"]
         return sc
-
     for item in result.content:
         text = getattr(item, "text", None)
         if text:
             try:
-                payload = json.loads(text)
-                return payload   # this already returns a real list/dict
+                return json.loads(text)
             except json.JSONDecodeError:
                 return text
-
     return None
 
-def _as_list(parsed):
-    """Garante lista de dicts: string -> json.loads; dict -> [dict]; lista -> parseia cada item."""
-    if isinstance(parsed, str):
-        parsed = json.loads(parsed)
-    if isinstance(parsed, dict):
-        return [parsed]
-    return [json.loads(x) if isinstance(x, str) else x for x in parsed]
 
-async def main():
+async def run():
     params = StdioServerParameters(command="python", args=["servidor_mcp.py"])
     async with stdio_client(params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
-
-            tools_resp = await session.list_tools()
-            tools = [t.name for t in tools_resp.tools]
-
+            tools = [t.name for t in (await session.list_tools()).tools]
             criar = await session.call_tool(
-                "criar_tarefa", {"titulo": "estudar MCP", "concluida": False}
+                "criar_tarefa", {"titulo": "tarefa via mcp", "concluida": False}
             )
             listar = await session.call_tool("listar_tarefas", {})
-
             return {
                 "tools": tools,
                 "criar_resultado": _parse(criar),
-                "listar_resultado": _as_list(_parse(listar)),
+                "listar_resultado": _parse(listar),
             }
 
 
-if __name__ == "__main__":
-    envelope = asyncio.run(main())
+def main():
+    envelope = asyncio.run(run())
     sys.stdout.write(json.dumps(envelope, ensure_ascii=False) + "\n")
+
+
+if __name__ == "__main__":
+    main()
