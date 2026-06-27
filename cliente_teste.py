@@ -18,7 +18,7 @@ def _unwrap(result):
                 blocks.append(text)
     return blocks[0] if len(blocks) == 1 else blocks
 
-asyn def main():
+async def main():
     params = StdioServerParameters(command="python", args = ["servidor_mcp.py"])
     async with stdio_client(params) as (read, write):
         async with ClientSession(read, write) as session:
