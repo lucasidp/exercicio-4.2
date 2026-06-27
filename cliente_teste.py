@@ -45,15 +45,11 @@ async def main():
             )
             listar = await session.call_tool("listar_tarefas", {})
 
-            envelope = {
+            return {
                 "tools": tools,
                 "criar_resultado": _parse(criar),
                 "listar_resultado": _as_list(_parse(listar)),
             }
-            payload = json.dumps(envelope, ensure_ascii=False)
-            print(payload)
-            with open("response.json", "w") as fh:
-                fh.write(payload)
 
 
 if __name__ == "__main__":
